@@ -20,7 +20,6 @@
 
 %ctor {
 	if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.Preferences"]){
-		NSLog(@"%@",@"Rootin, tootin, ready for shootin!");
 		%init(Preferences);
 	}
 }
