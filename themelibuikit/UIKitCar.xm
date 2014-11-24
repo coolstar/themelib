@@ -15,7 +15,7 @@ static BOOL isAssetManagerUIKit(_UIAssetManager *manager){
 }
 
 static UIImage *getUIKitImageForName(NSString *name){
-	NSDictionary *wbPlist = [NSDictionary dictionaryWithContentsOfFile:[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/com.saurik.WinterBoard.plist"]];
+	NSDictionary *wbPlist = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.saurik.WinterBoard.plist"];
 	NSArray *themes = wbPlist[@"Themes"];
 	
 	for (NSDictionary *theme in themes)
