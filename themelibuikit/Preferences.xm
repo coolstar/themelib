@@ -3,11 +3,9 @@
 - (id)specifiers {
 	NSMutableDictionary *iconCache = [NSMutableDictionary new];
 	NSDictionary *origIconCache = [self valueForKey:@"_iconCache"];
-	NSLog(@"Orig Cache: %@",origIconCache);
 	for (NSString *key in origIconCache){
 		UIImage *icon = [origIconCache objectForKey:key];
 		if ([UIImage imageNamed:key]){
-			NSLog(@"Overriding Prefs icon for %@",key);
 			icon = [UIImage imageNamed:key];
 		}
 		[iconCache setObject:icon forKey:key];
