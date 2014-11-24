@@ -51,6 +51,24 @@ the generation of a class list and an automatic constructor.
 	} else
 		return %orig;
 }
+- (UIImage *)getUnmaskedIconImage:(int)image {
+	UIImage *ret = nil;
+	if ([%c(SBNewsstand) useInternationalAssets]){
+		if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad)
+			ret = [UIImage imageNamed:@"NewsstandIconInternational~iphone"];
+		else
+			ret = [UIImage imageNamed:@"NewsstandIconInternational~ipad"];
+	} else {
+		if ([[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad)
+			ret = [UIImage imageNamed:@"NewsstandIconEnglish~iphone"];
+		else
+			ret = [UIImage imageNamed:@"NewsstandIconEnglish~ipad"];
+	}
+	if (ret)
+		return ret;
+	else
+		return %orig;
+}
 %end
 %end
 
