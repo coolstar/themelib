@@ -17,9 +17,9 @@ static NSDictionary *getBadgeSettings()
 			NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Info.plist",themeName];
 			NSDictionary *themeDict = [NSDictionary dictionaryWithContentsOfFile:path];
 
-			if (themeDict[@"BadgeSettings"] != nil)
+			if (themeDict[@"ThemeLib-BadgeSettings"] != nil)
 			{
-				return themeDict[@"BadgeSettings"];
+				return themeDict[@"ThemeLib-BadgeSettings"];
 			}
 		}
 	}
@@ -41,7 +41,7 @@ static NSDictionary *getBadgeSettings()
 
 + (SBIconAccessoryImage *)_checkoutImageForText:(NSString *)text highlighted:(BOOL)highlighted {
 	NSDictionary *badgeSettings = getBadgeSettings();
-	NSString *badgeFont = @"HelveticaNeue-Light";
+	NSString *badgeFont = @"HelveticaNeue";
 	CGFloat badgeFontSize = 16.0f;
 	CGFloat badgeHeightChange = 0.0f; //0.0f for classic
 	CGFloat badgeWidthChange = 0.0f; //2.0f for classic
