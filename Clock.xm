@@ -8,7 +8,7 @@ the generation of a class list and an automatic constructor.
 - (UIImage *)contentsImage;
 @end
 
-%group iOS8
+/*%group iOS8
 %hook SBClockApplicationIconImageView
 
 - (UIImage *)contentsImage {
@@ -49,7 +49,7 @@ the generation of a class list and an automatic constructor.
 
 // Always make sure you clean up after yourself; Not doing so could have grave consequences!
 %end
-%end
+%end*/
 
 %group all
 %hook SBClockApplicationIconImageView
@@ -81,8 +81,8 @@ the generation of a class list and an automatic constructor.
 %end
 
 %ctor {
-	if (kCFCoreFoundationVersionNumber >= 1140.10){
+	/*if (kCFCoreFoundationVersionNumber >= 1140.10){
 		%init(iOS8);
-	}
+	}*/
 	%init(all);
 }
