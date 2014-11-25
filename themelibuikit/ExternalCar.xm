@@ -7,14 +7,14 @@
 	+ (UIImage *)kitImageNamed:(NSString *)name;
 @end
 
-static BOOL isAssetManagerUIKit(_UIAssetManager *manager){
+static BOOL isAssetManagerNotUIKit(_UIAssetManager *manager){
 	if ([manager.carFileName isEqualToString:@"UIKit_Artwork"] && [manager.bundle.bundlePath isEqualToString:@"/System/Library/Frameworks/UIKit.framework/Artwork.bundle"]){
-		return YES;
+		return NO;
 	}
-	return NO;
+	return YES;
 }
 
-static UIImage *getUIKitImageForName(NSString *name){
+static UIImage *getImageForName(NSString *name, NSBundle *bundle){
 	NSDictionary *wbPlist = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.saurik.WinterBoard.plist"];
 	NSArray *themes = wbPlist[@"Themes"];
 	
@@ -23,7 +23,7 @@ static UIImage *getUIKitImageForName(NSString *name){
 		if ([theme[@"Active"] boolValue])
 		{
 			NSString *themeName = theme[@"Name"];
-			NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/UIImages/%@",themeName,name];
+			NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Bundles/%@/%@",themeName,bundle.bundleIdentifier,name];
 			if ([UIImage imageWithContentsOfFile:path])
 				return [UIImage imageWithContentsOfFile:path];
 		}
@@ -34,8 +34,8 @@ static UIImage *getUIKitImageForName(NSString *name){
 %group iOS8
 %hook _UIAssetManager
 - (UIImage *)imageNamed:(NSString *)name {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
+	if (isAssetManagerNotUIKit(self)){
+		UIImage *ret = getImageForName(name, self.bundle);
 		if (ret != nil){
 			return ret;
 		} else {
@@ -46,8 +46,8 @@ static UIImage *getUIKitImageForName(NSString *name){
 }
 
 - (id)imageNamed:(id)name scale:(float)arg2 idiom:(int)arg3 subtype:(unsigned int)arg4 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
+	if (isAssetManagerNotUIKit(self)){
+		UIImage *ret = getImageForName(name, self.bundle);
 		if (ret != nil){
 			return ret;
 		} else {
@@ -58,8 +58,8 @@ static UIImage *getUIKitImageForName(NSString *name){
 }
 
 - (UIImage *)imageNamed:(NSString *)name idiom:(int)arg2 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
+	if (isAssetManagerNotUIKit(self)){
+		UIImage *ret = getImageForName(name, self.bundle);
 		if (ret != nil){
 			return ret;
 		} else {
@@ -70,8 +70,8 @@ static UIImage *getUIKitImageForName(NSString *name){
 }
 
 - (UIImage *)imageNamed:(NSString *)name idiom:(int)arg2 subtype:(unsigned int)arg3 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
+	if (isAssetManagerNotUIKit(self)){
+		UIImage *ret = getImageForName(name, self.bundle);
 		if (ret != nil){
 			return ret;
 		} else {
@@ -82,8 +82,8 @@ static UIImage *getUIKitImageForName(NSString *name){
 }
 
 - (UIImage *)imageNamed:(NSString *)name withTrait:(id)arg2 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
+	if (isAssetManagerNotUIKit(self)){
+		UIImage *ret = getImageForName(name, self.bundle);
 		if (ret != nil){
 			return ret;
 		} else {
