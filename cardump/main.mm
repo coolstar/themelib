@@ -45,7 +45,7 @@ int main(int argc, char **argv, char **envp) {
 }
 
 void showHelp(){
-	std::cout << "USAGE: car-dump [OPTION] [PATH TO CAR FILE]";
+	std::cout << "USAGE: cardump [OPTION] [PATH TO OUTPUT] [PATH TO CAR FILE]";
 	std::cout << "\n";
 	std::cout << "--help					Show this Help Screen.\n";
 	std::cout << "--list					List the file names of the car file.\n";
