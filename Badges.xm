@@ -1,3 +1,4 @@
+#import "themelibuikit/ThemeLibSettingsManager.h"
 /* How to Hook with Logos
 Hooks are written with syntax similar to that of an Objective-C @implementation.
 You don't need to #include <substrate.h>, it will be done automatically, as will
@@ -6,21 +7,17 @@ the generation of a class list and an automatic constructor.
 
 static NSDictionary *getBadgeSettings()
 {
-	NSDictionary *wbPlist = [NSDictionary dictionaryWithContentsOfFile:[NSHomeDirectory() stringByAppendingString:@"/Library/Preferences/com.saurik.WinterBoard.plist"]];
-	NSArray *themes = wbPlist[@"Themes"];
+	NSArray *themes = [[%c(ThemeLibSettingsManager) sharedManager] themeSettings];
 	
 	for (NSDictionary *theme in themes)
 	{
-		if ([theme[@"Active"] boolValue])
-		{
-			NSString *themeName = theme[@"Name"];
-			NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Info.plist",themeName];
-			NSDictionary *themeDict = [NSDictionary dictionaryWithContentsOfFile:path];
+		NSString *themeName = theme[@"Name"];
+		NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Info.plist",themeName];
+		NSDictionary *themeDict = [NSDictionary dictionaryWithContentsOfFile:path];
 
-			if (themeDict[@"ThemeLib-BadgeSettings"] != nil)
-			{
-				return themeDict[@"ThemeLib-BadgeSettings"];
-			}
+		if (themeDict[@"ThemeLib-BadgeSettings"] != nil)
+		{
+			return themeDict[@"ThemeLib-BadgeSettings"];
 		}
 	}
 	return nil;

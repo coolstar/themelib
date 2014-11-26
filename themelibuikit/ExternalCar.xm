@@ -1,3 +1,5 @@
+#import "ThemeLibSettingsManager.h"
+
 @interface _UIAssetManager : NSObject
 	@property (readonly) NSBundle *bundle;
 	@property (readonly) NSString *carFileName;
@@ -15,18 +17,14 @@ static BOOL isAssetManagerNotUIKit(_UIAssetManager *manager){
 }
 
 static UIImage *getImageForName(NSString *name, NSBundle *bundle){
-	NSDictionary *wbPlist = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/com.saurik.WinterBoard.plist"];
-	NSArray *themes = wbPlist[@"Themes"];
+	NSArray *themes = [[ThemeLibSettingsManager sharedManager] themeSettings];
 	
 	for (NSDictionary *theme in themes)
 	{
-		if ([theme[@"Active"] boolValue])
-		{
-			NSString *themeName = theme[@"Name"];
-			NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Bundles/%@/%@",themeName,bundle.bundleIdentifier,name];
-			if ([UIImage imageWithContentsOfFile:path])
-				return [UIImage imageWithContentsOfFile:path];
-		}
+		NSString *themeName = theme[@"Name"];
+		NSString *path = [NSString stringWithFormat:@"/Library/Themes/%@.theme/Bundles/%@/%@",themeName,bundle.bundleIdentifier,name];
+		if ([UIImage imageWithContentsOfFile:path])
+			return [UIImage imageWithContentsOfFile:path];
 	}
 	return nil;
 }
