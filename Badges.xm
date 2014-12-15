@@ -1,9 +1,10 @@
 #import "themelibuikit/ThemeLibSettingsManager.h"
+#import "UIColor+HTMLColors.h"
 
 static NSDictionary *getBadgeSettings()
 {
 	NSArray *themes = [[%c(ThemeLibSettingsManager) sharedManager] themeSettings];
-	
+
 	for (NSDictionary *theme in themes)
 	{
 		NSString *themeName = theme[@"Name"];
@@ -39,6 +40,7 @@ static NSDictionary *getBadgeSettings()
 	CGFloat badgeWidthChange = 0.0f; //2.0f for classic
 	CGFloat badgeXoffset = 0.0f; //2.0f for classic
 	CGFloat badgeYoffset = 0.0f; //-2.0f for classic
+	UIColor *badgeTextColor = [UIColor whiteColor];
 	if ([badgeSettings objectForKey:@"FontName"])
 		badgeFont = [badgeSettings objectForKey:@"FontName"];
 	if ([badgeSettings objectForKey:@"FontSize"])
@@ -51,20 +53,20 @@ static NSDictionary *getBadgeSettings()
 		badgeXoffset = [[badgeSettings objectForKey:@"TextXoffset"] floatValue];
 	if ([badgeSettings objectForKey:@"TextYoffset"])
 		badgeYoffset = [[badgeSettings objectForKey:@"TextYoffset"] floatValue];
+	if ([badgeSettings objectForKey:@"TextColor"])
+		badgeTextColor = [UIColor colorWithCSS:[badgeSettings objectForKey:@"TextColor"]];
 
 	UIFont *font = [UIFont fontWithName:badgeFont size:badgeFontSize];
-	CGSize size = [text sizeWithFont:font];
+	CGSize size = [text sizeWithAttributes:@{NSFontAttributeName:font}];
 	if (size.height != 0)
 		size.height += badgeHeightChange;
 	if (size.width != 0)
 		size.width += badgeWidthChange;
 	UIGraphicsBeginImageContextWithOptions(size, NO, 0.0);
-	[[UIColor whiteColor] set];
-	[text drawAtPoint:CGPointMake(badgeXoffset,badgeYoffset) withFont:font];
+	[text drawAtPoint:CGPointMake(badgeXoffset,badgeYoffset) withAttributes:@{NSFontAttributeName:font, NSForegroundColorAttributeName:badgeTextColor}];
 	UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
 	UIGraphicsEndImageContext();
 	return [[%c(SBIconAccessoryImage) alloc] initWithImage:image];
 }
 
-// Always make sure you clean up after yourself; Not doing so could have grave consequences!
 %end

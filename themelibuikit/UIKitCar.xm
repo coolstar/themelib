@@ -1,4 +1,5 @@
 #import "ThemeLibSettingsManager.h"
+#import <objc/runtime.h>
 
 @interface _UIAssetManager : NSObject
 	@property (readonly) NSBundle *bundle;
@@ -9,8 +10,20 @@
 	+ (UIImage *)kitImageNamed:(NSString *)name;
 @end
 
+struct SizeClassPair {
+	NSInteger width;
+	NSInteger height;
+};
+
+static char *UIKitCarBundle;
+
 static BOOL isAssetManagerUIKit(_UIAssetManager *manager){
-	if ([manager.carFileName isEqualToString:@"UIKit_Artwork"] && [manager.bundle.bundlePath isEqualToString:@"/System/Library/Frameworks/UIKit.framework/Artwork.bundle"]){
+	NSBundle *bundle = nil;
+	if (kCFCoreFoundationVersionNumber <= 847.27)
+		bundle = objc_getAssociatedObject(manager, &UIKitCarBundle);
+	else
+		bundle = manager.bundle;
+	if ([manager.carFileName isEqualToString:@"UIKit_Artwork"] && [bundle.bundlePath isEqualToString:@"/System/Library/Frameworks/UIKit.framework/Artwork.bundle"]){
 		return YES;
 	}
 	return NO;
@@ -31,7 +44,7 @@ static UIImage *getUIKitImageForName(NSString *name){
 
 %group iOS8
 %hook _UIAssetManager
-- (UIImage *)imageNamed:(NSString *)name {
+- (id)imageNamed:(id)name scale:(float)arg2 idiom:(int)arg3 subtype:(unsigned int)arg4 cachingOptions:(unsigned int)arg5 sizeClassPair:(SizeClassPair)arg6 attachCatalogImage:(BOOL)arg7 {
 	if (isAssetManagerUIKit(self)){
 		UIImage *ret = getUIKitImageForName(name);
 		if (ret != nil){
@@ -43,43 +56,19 @@ static UIImage *getUIKitImageForName(NSString *name){
 	return %orig;
 }
 
-- (id)imageNamed:(id)name scale:(float)arg2 idiom:(int)arg3 subtype:(unsigned int)arg4 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
-		if (ret != nil){
-			return ret;
-		} else {
-			return %orig;
-		}
-	}
-	return %orig;
+%end
+%end
+
+%group iOS7
+%hook _UIAssetManager
+- (id)initWithName:(NSString *)name inBundle:(NSBundle *)bundle idiom:(int)idiom {
+	self = %orig;
+	if (self)
+		objc_setAssociatedObject(self, &UIKitCarBundle, bundle, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
+	return self;
 }
 
-- (UIImage *)imageNamed:(NSString *)name idiom:(int)arg2 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
-		if (ret != nil){
-			return ret;
-		} else {
-			return %orig;
-		}
-	}
-	return %orig;
-}
-
-- (UIImage *)imageNamed:(NSString *)name idiom:(int)arg2 subtype:(unsigned int)arg3 {
-	if (isAssetManagerUIKit(self)){
-		UIImage *ret = getUIKitImageForName(name);
-		if (ret != nil){
-			return ret;
-		} else {
-			return %orig;
-		}
-	}
-	return %orig;
-}
-
-- (UIImage *)imageNamed:(NSString *)name withTrait:(id)arg2 {
+- (id)imageNamed:(id)name scale:(float)arg2 idiom:(int)arg3 subtype:(unsigned int)arg4 cachingOptions:(unsigned int)arg5 {
 	if (isAssetManagerUIKit(self)){
 		UIImage *ret = getUIKitImageForName(name);
 		if (ret != nil){
@@ -94,7 +83,13 @@ static UIImage *getUIKitImageForName(NSString *name){
 %end
 
 %ctor {
-	if (kCFCoreFoundationVersionNumber >= 1140.10){
-		%init(iOS8);
+	if (kCFCoreFoundationVersionNumber >= 847.20){
+		if (![[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"org.coolstar.anemone"]){
+			if (kCFCoreFoundationVersionNumber <= 847.27){
+				%init(iOS7);
+			} else {
+				%init(iOS8);
+			}
+		}
 	}
 }
