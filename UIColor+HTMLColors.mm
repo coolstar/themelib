@@ -374,12 +374,12 @@ static NSCharacterSet *CMRHexCharacters() {
 // We know we've got hex already, so assume this works
 static NSUInteger CMRParseHex(NSString *str, BOOL repeated)
 {
-    NSUInteger ans = 0;
+    unsigned int ans = 0;
     if (repeated) {
         str = [NSString stringWithFormat:@"%@%@", str, str];
     }
     NSScanner *scanner = [NSScanner scannerWithString:str];
-    [scanner scanHexInt:(unsigned *)&ans];
+    [scanner scanHexInt:&ans];
     return ans;
 }
 
